@@ -3,52 +3,133 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AutoApply</title>
+  <title>AutoApply — AI Job Application Assistant</title>
+  <meta name="description" content="Upload your resume and let AI find the perfect job matches for you.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-  <!-- Landing / Upload Screen -->
+  <!-- ========== Upload Screen ========== -->
   <div id="screen-upload" class="screen active">
-    <div class="container">
-      <h1>AutoApply</h1>
-      <p class="subtitle">Your AI-powered job application assistant</p>
+    <div class="screen-inner">
+      <div class="container">
+        <div class="brand fade-up">
+          <div class="brand-mark">
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+              <rect width="36" height="36" rx="10" fill="url(#brand-grad)"/>
+              <path d="M11 18.5L15.5 23L25 13" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <defs>
+                <linearGradient id="brand-grad" x1="0" y1="0" x2="36" y2="36">
+                  <stop stop-color="#6366f1"/>
+                  <stop offset="1" stop-color="#8b5cf6"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <h1>AutoApply</h1>
+        </div>
+        <p class="subtitle fade-up delay-1">Upload your resume and let AI set up your job search profile in minutes.</p>
 
-      <div id="upload-area" class="upload-area">
-        <div class="upload-icon">&#128196;</div>
-        <p>Drag & drop your resume here</p>
-        <p class="muted">or</p>
-        <label class="btn" for="file-input">Choose File</label>
-        <input type="file" id="file-input" accept=".pdf,.docx" hidden>
-        <p class="muted">PDF or DOCX, up to 10 MB</p>
+        <div id="upload-area" class="upload-area fade-up delay-2">
+          <div class="upload-icon">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <rect x="4" y="4" width="40" height="40" rx="12" fill="#eef2ff"/>
+              <path d="M24 16V32M24 16L18 22M24 16L30 22" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <p class="upload-title">Drag & drop your resume here</p>
+          <p class="upload-divider">or</p>
+          <label class="btn btn-primary" for="file-input">
+            <span>Choose File</span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </label>
+          <input type="file" id="file-input" accept=".pdf,.docx" hidden>
+          <p class="upload-hint">PDF or DOCX &middot; up to 10 MB</p>
+        </div>
+
+        <div id="upload-status" class="status-card hidden fade-up">
+          <div class="status-spinner"></div>
+          <div class="status-content">
+            <p id="status-text" class="status-label">Parsing your resume...</p>
+            <div class="progress-track">
+              <div id="progress-bar" class="progress-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="upload-error" class="error-banner hidden">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="7" stroke="#dc2626" stroke-width="1.5"/>
+            <path d="M8 5V9M8 11V11.5" stroke="#dc2626" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span id="error-text"></span>
+        </div>
       </div>
 
-      <div id="upload-status" class="status hidden">
-        <div class="spinner"></div>
-        <p id="status-text">Parsing your resume...</p>
-      </div>
-
-      <div id="upload-error" class="error hidden"></div>
+      <footer class="screen-footer fade-up delay-3">
+        <p>Your data is encrypted and never shared without your permission.</p>
+      </footer>
     </div>
   </div>
 
-  <!-- Chatbot Intake Screen -->
+  <!-- ========== Chat Screen ========== -->
   <div id="screen-chat" class="screen">
-    <div class="container chat-container">
-      <h2>AutoApply</h2>
+    <div class="chat-wrapper">
+      <header class="chat-header">
+        <div class="brand-mark brand-mark-sm">
+          <svg width="28" height="28" viewBox="0 0 36 36" fill="none">
+            <rect width="36" height="36" rx="10" fill="url(#brand-grad2)"/>
+            <path d="M11 18.5L15.5 23L25 13" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs>
+              <linearGradient id="brand-grad2" x1="0" y1="0" x2="36" y2="36">
+                <stop stop-color="#6366f1"/>
+                <stop offset="1" stop-color="#8b5cf6"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="chat-header-text">
+          <h2>AutoApply</h2>
+          <span class="chat-header-status">
+            <span class="status-dot"></span>
+            Setting up your profile
+          </span>
+        </div>
+      </header>
+
       <div id="chat-messages" class="chat-messages"></div>
-      <div id="chat-input-area" class="chat-input-area">
-        <input type="text" id="chat-input" placeholder="Type your answer..." autocomplete="off">
-        <button id="chat-send" class="btn">Send</button>
+
+      <div class="chat-input-wrapper">
+        <div id="chat-input-area" class="chat-input-area">
+          <input type="text" id="chat-input" placeholder="Type your answer..." autocomplete="off">
+          <button id="chat-send" class="btn-send" aria-label="Send">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Done Screen -->
+  <!-- ========== Done Screen ========== -->
   <div id="screen-done" class="screen">
-    <div class="container">
-      <div class="done-icon">&#10003;</div>
-      <h2>You're all set!</h2>
-      <p>Your profile has been saved. We'll start finding matches for you.</p>
+    <div class="screen-inner">
+      <div class="container">
+        <div class="done-card fade-up">
+          <div class="done-icon">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+              <path d="M6 17L12.5 23.5L26 9" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h2>You're all set!</h2>
+          <p>Your profile has been saved successfully. We'll start finding the best matches for you.</p>
+        </div>
+      </div>
     </div>
   </div>
 
