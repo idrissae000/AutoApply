@@ -3,131 +3,348 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AutoApply — AI Job Application Assistant</title>
-  <meta name="description" content="Upload your resume and let AI find the perfect job matches for you.">
+  <title>AutoApply — Apply to Hundreds of Jobs While You Sleep</title>
+  <meta name="description" content="AutoApply uses AI to find jobs, tailor your resume, and auto-submit applications on your behalf.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-  <!-- ========== Upload Screen ========== -->
-  <div id="screen-upload" class="screen active">
-    <div class="screen-inner">
+
+  <!-- ========== NAVBAR ========== -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="#" class="nav-brand" data-nav="home">
+        <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
+          <rect width="36" height="36" rx="10" fill="url(#ng)"/>
+          <path d="M11 18.5L15.5 23L25 13" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs><linearGradient id="ng" x1="0" y1="0" x2="36" y2="36"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient></defs>
+        </svg>
+        <span>AutoApply</span>
+      </a>
+      <div class="nav-links" id="nav-links">
+        <a href="#how-it-works" class="nav-link">How It Works</a>
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#pricing" class="nav-link">Pricing</a>
+        <a href="#" class="btn btn-primary btn-sm" data-nav="get-started">Get Started</a>
+      </div>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ========== LANDING PAGE ========== -->
+  <div id="page-landing" class="page active">
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-inner container">
+        <div class="hero-badge fade-up">
+          <span class="badge">AI-Powered Job Search</span>
+        </div>
+        <h1 class="hero-title fade-up delay-1">Apply to hundreds of jobs<br>while you sleep.</h1>
+        <p class="hero-sub fade-up delay-2">AutoApply finds the right jobs, tailors your resume for each application, and submits them automatically — so you can focus on what matters.</p>
+        <div class="hero-actions fade-up delay-3">
+          <a href="#" class="btn btn-primary btn-lg" data-nav="get-started">
+            Get Started Free
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a href="#how-it-works" class="btn btn-ghost btn-lg">See How It Works</a>
+        </div>
+        <div class="hero-proof fade-up delay-4">
+          <div class="avatars">
+            <div class="avatar" style="background:#6366f1">J</div>
+            <div class="avatar" style="background:#8b5cf6">S</div>
+            <div class="avatar" style="background:#a78bfa">M</div>
+            <div class="avatar" style="background:#c4b5fd">R</div>
+          </div>
+          <p>Trusted by <strong>2,400+</strong> job seekers</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="section">
       <div class="container">
-        <div class="brand fade-up">
-          <div class="brand-mark">
-            <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-              <rect width="36" height="36" rx="10" fill="url(#brand-grad)"/>
+        <div class="section-header">
+          <span class="section-label">How It Works</span>
+          <h2 class="section-title">Three steps to your next job.</h2>
+          <p class="section-sub">No more endless scrolling. No more copy-pasting. Just results.</p>
+        </div>
+        <div class="steps-grid">
+          <div class="step-card reveal">
+            <div class="step-number">01</div>
+            <div class="step-icon">
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="4" y="2" width="20" height="24" rx="3" stroke="currentColor" stroke-width="1.75"/><path d="M9 8H19M9 12H19M9 16H15" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+            </div>
+            <h3>Upload your resume</h3>
+            <p>Drop in your PDF or DOCX. Our AI extracts your skills, experience, and education in seconds.</p>
+          </div>
+          <div class="step-card reveal">
+            <div class="step-number">02</div>
+            <div class="step-icon">
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M5 20L5 22C5 23.1 5.9 24 7 24H21C22.1 24 23 23.1 23 22V20" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/><path d="M14 4V16M14 16L9 11M14 16L19 11" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h3>Tell us your preferences</h3>
+            <p>Answer a few quick questions — target roles, location, salary, and anything you want to avoid.</p>
+          </div>
+          <div class="step-card reveal">
+            <div class="step-number">03</div>
+            <div class="step-icon">
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M22 5L10 17L6 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="14" r="11" stroke="currentColor" stroke-width="1.75"/></svg>
+            </div>
+            <h3>We apply for you</h3>
+            <p>AutoApply matches you to jobs, tailors your resume for each one, and submits applications automatically.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="section section-alt">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-label">Features</span>
+          <h2 class="section-title">Everything you need to land interviews.</h2>
+          <p class="section-sub">Built for serious job seekers who want results, not busywork.</p>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card reveal">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/></svg>
+            </div>
+            <h3>AI Resume Tailoring</h3>
+            <p>Each application gets a custom-tuned version of your resume, optimized for the specific job description and keywords.</p>
+          </div>
+          <div class="feature-card reveal">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="18" rx="3" stroke="currentColor" stroke-width="1.75"/><path d="M8 12L11 15L16 9" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h3>Auto-Apply Everywhere</h3>
+            <p>We submit to LinkedIn Easy Apply, company career pages, and major job boards — all on autopilot.</p>
+          </div>
+          <div class="feature-card reveal">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.75"/><path d="M12 6V12L16 14" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h3>Smart Job Matching</h3>
+            <p>Only applies to jobs that match your skills and preferences. No spam applications, no irrelevant roles.</p>
+          </div>
+          <div class="feature-card reveal">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 3H21V17H3V3Z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M3 7H21" stroke="currentColor" stroke-width="1.75"/><path d="M8 21H16" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/><path d="M12 17V21" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+            </div>
+            <h3>Application Dashboard</h3>
+            <p>Track every application in one place — see where you applied, response rates, and interview invites in real time.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing -->
+    <section id="pricing" class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-label">Pricing</span>
+          <h2 class="section-title">Simple, transparent pricing.</h2>
+          <p class="section-sub">Start free. Upgrade when you're ready to go all in.</p>
+        </div>
+        <div class="pricing-grid">
+          <div class="pricing-card reveal">
+            <div class="pricing-header">
+              <h3>Free</h3>
+              <div class="pricing-amount">
+                <span class="price">$0</span>
+                <span class="period">/month</span>
+              </div>
+              <p class="pricing-desc">Perfect for getting started</p>
+            </div>
+            <ul class="pricing-features">
+              <li>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12L13 4" stroke="#10b981" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                10 applications per month
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12L13 4" stroke="#10b981" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                AI resume parsing
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12L13 4" stroke="#10b981" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Basic job matching
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12L13 4" stroke="#10b981" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Application dashboard
+              </li>
+            </ul>
+            <a href="#" class="btn btn-outline btn-block" data-nav="get-started">Get Started</a>
+          </div>
+          <div class="pricing-card pricing-card-featured reveal">
+            <div class="pricing-badge">Most Popular</div>
+            <div class="pricing-header">
+              <h3>Pro</h3>
+              <div class="pricing-amount">
+                <span class="price">$15</span>
+                <span class="period">/month</span>
+              </div>
+              <p class="pricing-desc">For serious job seekers</p>
+            </div>
+            <ul class="pricing-features">
+              <li>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12L13 4" stroke="#10b981" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <strong>Unlimited</strong> applications
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12L13 4" stroke="#10b981" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                AI resume tailoring per job
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12L13 4" stroke="#10b981" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Priority job matching
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12L13 4" stroke="#10b981" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Advanced analytics
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12L13 4" stroke="#10b981" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Email support
+              </li>
+            </ul>
+            <a href="#" class="btn btn-primary btn-block" data-nav="get-started">Get Started</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section cta-section">
+      <div class="container">
+        <div class="cta-card reveal">
+          <h2>Ready to automate your job search?</h2>
+          <p>Upload your resume and start getting matched to jobs in minutes. No credit card required.</p>
+          <a href="#" class="btn btn-primary btn-lg" data-nav="get-started">
+            Get Started Free
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-inner">
+          <div class="footer-brand">
+            <svg width="24" height="24" viewBox="0 0 36 36" fill="none">
+              <rect width="36" height="36" rx="10" fill="url(#fg)"/>
               <path d="M11 18.5L15.5 23L25 13" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-              <defs>
-                <linearGradient id="brand-grad" x1="0" y1="0" x2="36" y2="36">
-                  <stop stop-color="#6366f1"/>
-                  <stop offset="1" stop-color="#8b5cf6"/>
-                </linearGradient>
-              </defs>
+              <defs><linearGradient id="fg" x1="0" y1="0" x2="36" y2="36"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient></defs>
             </svg>
+            <span>AutoApply</span>
           </div>
-          <h1>AutoApply</h1>
+          <p>&copy; 2026 AutoApply. All rights reserved.</p>
         </div>
-        <p class="subtitle fade-up delay-1">Upload your resume and let AI set up your job search profile in minutes.</p>
+      </div>
+    </footer>
+  </div>
 
-        <div id="upload-area" class="upload-area fade-up delay-2">
-          <div class="upload-icon">
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-              <rect x="4" y="4" width="40" height="40" rx="12" fill="#eef2ff"/>
-              <path d="M24 16V32M24 16L18 22M24 16L30 22" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+  <!-- ========== GET STARTED PAGE (Upload + Chat + Done) ========== -->
+  <div id="page-app" class="page">
+
+    <!-- Upload Screen -->
+    <div id="screen-upload" class="screen active">
+      <div class="screen-inner">
+        <div class="container">
+          <div class="brand-header fade-up">
+            <h2>Let's set up your profile</h2>
+            <p class="subtitle">Upload your resume and we'll extract your info automatically.</p>
           </div>
-          <p class="upload-title">Drag & drop your resume here</p>
-          <p class="upload-divider">or</p>
-          <label class="btn btn-primary" for="file-input">
-            <span>Choose File</span>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </label>
-          <input type="file" id="file-input" accept=".pdf,.docx" hidden>
-          <p class="upload-hint">PDF or DOCX &middot; up to 10 MB</p>
-        </div>
 
-        <div id="upload-status" class="status-card hidden fade-up">
-          <div class="status-spinner"></div>
-          <div class="status-content">
-            <p id="status-text" class="status-label">Parsing your resume...</p>
-            <div class="progress-track">
-              <div id="progress-bar" class="progress-fill"></div>
+          <div id="upload-area" class="upload-area fade-up delay-1">
+            <div class="upload-icon">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                <rect x="4" y="4" width="40" height="40" rx="12" fill="#eef2ff"/>
+                <path d="M24 16V32M24 16L18 22M24 16L30 22" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <p class="upload-title">Drag & drop your resume here</p>
+            <p class="upload-divider">or</p>
+            <label class="btn btn-primary" for="file-input">
+              <span>Choose File</span>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </label>
+            <input type="file" id="file-input" accept=".pdf,.docx" hidden>
+            <p class="upload-hint">PDF or DOCX &middot; up to 10 MB</p>
+          </div>
+
+          <div id="upload-status" class="status-card hidden">
+            <div class="status-spinner"></div>
+            <div class="status-content">
+              <p id="status-text" class="status-label">Parsing your resume...</p>
+              <div class="progress-track">
+                <div id="progress-bar" class="progress-fill"></div>
+              </div>
             </div>
           </div>
+
+          <div id="upload-error" class="error-banner hidden">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#dc2626" stroke-width="1.5"/><path d="M8 5V9M8 11V11.5" stroke="#dc2626" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <span id="error-text"></span>
+          </div>
         </div>
 
-        <div id="upload-error" class="error-banner hidden">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <circle cx="8" cy="8" r="7" stroke="#dc2626" stroke-width="1.5"/>
-            <path d="M8 5V9M8 11V11.5" stroke="#dc2626" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          <span id="error-text"></span>
-        </div>
-      </div>
-
-      <footer class="screen-footer fade-up delay-3">
-        <p>Your data is encrypted and never shared without your permission.</p>
-      </footer>
-    </div>
-  </div>
-
-  <!-- ========== Chat Screen ========== -->
-  <div id="screen-chat" class="screen">
-    <div class="chat-wrapper">
-      <header class="chat-header">
-        <div class="brand-mark brand-mark-sm">
-          <svg width="28" height="28" viewBox="0 0 36 36" fill="none">
-            <rect width="36" height="36" rx="10" fill="url(#brand-grad2)"/>
-            <path d="M11 18.5L15.5 23L25 13" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <defs>
-              <linearGradient id="brand-grad2" x1="0" y1="0" x2="36" y2="36">
-                <stop stop-color="#6366f1"/>
-                <stop offset="1" stop-color="#8b5cf6"/>
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
-        <div class="chat-header-text">
-          <h2>AutoApply</h2>
-          <span class="chat-header-status">
-            <span class="status-dot"></span>
-            Setting up your profile
-          </span>
-        </div>
-      </header>
-
-      <div id="chat-messages" class="chat-messages"></div>
-
-      <div class="chat-input-wrapper">
-        <div id="chat-input-area" class="chat-input-area">
-          <input type="text" id="chat-input" placeholder="Type your answer..." autocomplete="off">
-          <button id="chat-send" class="btn-send" aria-label="Send">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
+        <div class="screen-footer fade-up delay-2">
+          <p>Your data is encrypted and never shared without your permission.</p>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- ========== Done Screen ========== -->
-  <div id="screen-done" class="screen">
-    <div class="screen-inner">
-      <div class="container">
-        <div class="done-card fade-up">
-          <div class="done-icon">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-              <path d="M6 17L12.5 23.5L26 9" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Chat Screen -->
+    <div id="screen-chat" class="screen">
+      <div class="chat-wrapper">
+        <header class="chat-header">
+          <div class="brand-mark-sm">
+            <svg width="28" height="28" viewBox="0 0 36 36" fill="none">
+              <rect width="36" height="36" rx="10" fill="url(#cg)"/>
+              <path d="M11 18.5L15.5 23L25 13" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <defs><linearGradient id="cg" x1="0" y1="0" x2="36" y2="36"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient></defs>
             </svg>
           </div>
-          <h2>You're all set!</h2>
-          <p>Your profile has been saved successfully. We'll start finding the best matches for you.</p>
+          <div class="chat-header-text">
+            <h2>AutoApply</h2>
+            <span class="chat-header-status">
+              <span class="status-dot"></span>
+              Setting up your profile
+            </span>
+          </div>
+        </header>
+        <div id="chat-messages" class="chat-messages"></div>
+        <div class="chat-input-wrapper">
+          <div id="chat-input-area" class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Type your answer..." autocomplete="off">
+            <button id="chat-send" class="btn-send" aria-label="Send">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Done Screen -->
+    <div id="screen-done" class="screen">
+      <div class="screen-inner">
+        <div class="container">
+          <div class="done-card fade-up">
+            <div class="done-icon">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M6 17L12.5 23.5L26 9" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h2>You're all set!</h2>
+            <p>Your profile has been saved. We'll start finding the best matches and applying on your behalf.</p>
+            <a href="#" class="btn btn-primary btn-lg" data-nav="home" style="margin-top:1.5rem">Back to Home</a>
+          </div>
         </div>
       </div>
     </div>

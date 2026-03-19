@@ -1,9 +1,22 @@
 const Anthropic = require('@anthropic-ai/sdk');
 
-const client = new Anthropic({ apiKey: process.env.CLAUDE_API_KEY });
+let client;
+
+function getClient() {
+  if (!client) {
+    const apiKey = process.env.CLAUDE_API_KEY;
+    if (!apiKey) {
+      throw new Error('CLAUDE_API_KEY environment variable is not set.');
+    }
+    client = new Anthropic({ apiKey });
+  }
+  return client;
+}
 
 async function extractStructuredData(resumeText) {
-  const message = await client.messages.create({
+  const anthropic = getClient();
+
+  const message = await anthropic.messages.create({
     model: 'claude-sonnet-4-6',
     max_tokens: 2048,
     messages: [
@@ -41,8 +54,20 @@ ${resumeText}`
     ]
   });
 
-  const content = message.content[0].text.trim();
-  return JSON.parse(content);
+  let content = message.content[0].text.trim();
+
+  // Strip markdown code fences if Claude wraps the response
+  const fenceMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (fenceMatch) {
+    content = fenceMatch[1].trim();
+  }
+
+  try {
+    return JSON.parse(content);
+  } catch (parseErr) {
+    console.error('Claude returned non-JSON content:', content);
+    throw new Error('Failed to parse structured data from AI response.');
+  }
 }
 
 module.exports = { extractStructuredData };

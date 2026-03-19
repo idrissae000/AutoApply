@@ -1,18 +1,24 @@
 (() => {
-  // --- State ---
+  // ================================================================
+  // State
+  // ================================================================
   let resumeData = null;
   const intakeAnswers = {};
 
   const INTAKE_QUESTIONS = [
     { key: 'target_roles', text: 'What job titles are you targeting? (separate multiple with commas)' },
-    { key: 'location', text: 'Preferred work location? (city name or "remote")' },
+    { key: 'location', text: 'Preferred work location? (city name or \u201cremote\u201d)' },
     { key: 'salary_range', text: 'What is your desired salary range? (e.g., $80k\u2013$120k)' },
     { key: 'job_type', text: 'Are you looking for full-time, part-time, or contract?' },
-    { key: 'avoid_list', text: 'Any industries or companies you want to avoid? (or type "none")' }
+    { key: 'avoid_list', text: 'Any industries or companies you want to avoid? (or type \u201cnone\u201d)' }
   ];
   let currentQuestion = 0;
 
-  // --- DOM refs ---
+  // ================================================================
+  // DOM Refs
+  // ================================================================
+  const pageLanding = document.getElementById('page-landing');
+  const pageApp = document.getElementById('page-app');
   const screenUpload = document.getElementById('screen-upload');
   const screenChat = document.getElementById('screen-chat');
   const screenDone = document.getElementById('screen-done');
@@ -25,40 +31,108 @@
   const chatMessages = document.getElementById('chat-messages');
   const chatInput = document.getElementById('chat-input');
   const chatSend = document.getElementById('chat-send');
+  const navbar = document.getElementById('navbar');
+  const navToggle = document.getElementById('nav-toggle');
+  const navLinks = document.getElementById('nav-links');
 
-  // --- Screen transitions ---
-  function showScreen(target) {
+  // ================================================================
+  // SPA Navigation
+  // ================================================================
+  function showPage(page) {
+    [pageLanding, pageApp].forEach(p => p.classList.remove('active'));
+    page.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  function showAppScreen(target) {
     const screens = [screenUpload, screenChat, screenDone];
     const current = screens.find(s => s.classList.contains('active'));
 
     if (current === target) return;
 
     if (current) {
-      current.style.opacity = '1';
       current.style.transition = 'opacity 0.3s ease';
       current.style.opacity = '0';
-
       setTimeout(() => {
         current.classList.remove('active');
         current.style.removeProperty('opacity');
         current.style.removeProperty('transition');
-
-        target.classList.add('active', 'screen-enter');
-        target.addEventListener('animationend', () => {
-          target.classList.remove('screen-enter');
-        }, { once: true });
+        target.classList.add('active');
+        target.style.opacity = '0';
+        target.style.transition = 'opacity 0.3s ease';
+        requestAnimationFrame(() => { target.style.opacity = '1'; });
       }, 300);
     } else {
       target.classList.add('active');
     }
   }
 
-  // --- Upload handling ---
-  uploadArea.addEventListener('click', (e) => {
-    if (e.target.closest('.btn-primary')) {
-      // Let the label handle it
-      return;
+  // Handle all [data-nav] clicks
+  document.addEventListener('click', (e) => {
+    const trigger = e.target.closest('[data-nav]');
+    if (!trigger) return;
+    e.preventDefault();
+
+    const action = trigger.getAttribute('data-nav');
+    // Close mobile menu
+    navLinks.classList.remove('open');
+    navToggle.classList.remove('open');
+
+    if (action === 'get-started') {
+      showPage(pageApp);
+    } else if (action === 'home') {
+      showPage(pageLanding);
     }
+  });
+
+  // ================================================================
+  // Navbar
+  // ================================================================
+  // Scroll state
+  let lastScroll = 0;
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    if (scrollY > 20) {
+      navbar.classList.add('scrolled');
+    } else {
+      navbar.classList.remove('scrolled');
+    }
+    lastScroll = scrollY;
+  }, { passive: true });
+
+  // Mobile toggle
+  navToggle.addEventListener('click', () => {
+    navToggle.classList.toggle('open');
+    navLinks.classList.toggle('open');
+  });
+
+  // Close mobile menu on anchor link clicks
+  navLinks.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', () => {
+      navLinks.classList.remove('open');
+      navToggle.classList.remove('open');
+    });
+  });
+
+  // ================================================================
+  // Scroll Reveal
+  // ================================================================
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+  // ================================================================
+  // Upload Handling
+  // ================================================================
+  uploadArea.addEventListener('click', (e) => {
+    if (e.target.closest('.btn')) return; // let label handle it
     fileInput.click();
   });
 
@@ -105,17 +179,23 @@
 
     try {
       const res = await fetch('/api/upload-resume', { method: 'POST', body: formData });
-      const json = await res.json();
+
+      let json;
+      try {
+        json = await res.json();
+      } catch {
+        throw new Error('Server returned an invalid response. Please try again.');
+      }
 
       if (!res.ok) {
-        throw new Error(json.error || 'Upload failed');
+        throw new Error(json.error || 'Upload failed.');
       }
 
       resumeData = json.data;
       statusText.textContent = 'Resume parsed successfully!';
 
       setTimeout(() => {
-        showScreen(screenChat);
+        showAppScreen(screenChat);
         setTimeout(() => startIntake(), 400);
       }, 600);
     } catch (err) {
@@ -130,7 +210,9 @@
     uploadError.classList.remove('hidden');
   }
 
-  // --- Chat intake ---
+  // ================================================================
+  // Chat Intake
+  // ================================================================
   function addMessage(text, sender) {
     return new Promise((resolve) => {
       const bubble = document.createElement('div');
@@ -140,7 +222,6 @@
       requestAnimationFrame(() => {
         chatMessages.scrollTo({ top: chatMessages.scrollHeight, behavior: 'smooth' });
       });
-      // Resolve after animation completes
       setTimeout(resolve, 350);
     });
   }
@@ -163,7 +244,7 @@
 
   async function addBotMessage(text) {
     showTyping();
-    await new Promise(r => setTimeout(r, 600 + Math.random() * 400));
+    await new Promise(r => setTimeout(r, 500 + Math.random() * 400));
     hideTyping();
     await addMessage(text, 'bot');
   }
@@ -231,11 +312,17 @@
         body: JSON.stringify(profile)
       });
 
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Save failed');
+      let json;
+      try {
+        json = await res.json();
+      } catch {
+        throw new Error('Server returned an invalid response.');
+      }
+
+      if (!res.ok) throw new Error(json.error || 'Save failed.');
 
       await addBotMessage('All done! Redirecting you now\u2026');
-      setTimeout(() => showScreen(screenDone), 800);
+      setTimeout(() => showAppScreen(screenDone), 800);
     } catch (err) {
       await addBotMessage(`Something went wrong: ${err.message}. Please try again later.`);
     }
