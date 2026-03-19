@@ -1033,6 +1033,67 @@ body {
   30% { transform: translateY(-4px); opacity: 1; }
 }
 
+/* Quick-select button group */
+.chat-button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-self: flex-start;
+  max-width: 88%;
+  animation: bubbleIn 0.35s var(--ease-out);
+  padding: 0.25rem 0;
+}
+
+.chat-quick-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  font-family: var(--font);
+  font-weight: 500;
+  color: var(--color-primary);
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-primary);
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  line-height: 1.4;
+}
+
+.chat-quick-btn:hover {
+  background: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(99,102,241,0.25);
+  transform: translateY(-1px);
+}
+
+.chat-quick-btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.chat-quick-btn-primary {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+
+.chat-quick-btn-primary:hover {
+  background: var(--color-primary-hover);
+  box-shadow: 0 4px 14px rgba(99,102,241,0.3);
+}
+
+/* Disabled input state */
+.chat-input-area input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
 .chat-input-wrapper {
   padding: 0.75rem 1.5rem 1.25rem;
   border-top: 1px solid var(--color-border-light);

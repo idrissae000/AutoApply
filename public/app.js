@@ -3,16 +3,14 @@
   // State
   // ================================================================
   let resumeData = null;
-  const intakeAnswers = {};
-
-  const INTAKE_QUESTIONS = [
-    { key: 'target_roles', text: 'What job titles are you targeting? (separate multiple with commas)' },
-    { key: 'location', text: 'Preferred work location? (city name or \u201cremote\u201d)' },
-    { key: 'salary_range', text: 'What is your desired salary range? (e.g., $80k\u2013$120k)' },
-    { key: 'job_type', text: 'Are you looking for full-time, part-time, or contract?' },
-    { key: 'avoid_list', text: 'Any industries or companies you want to avoid? (or type \u201cnone\u201d)' }
-  ];
-  let currentQuestion = 0;
+  let resumeText = '';
+  // Full conversation history sent to the API (role/content pairs)
+  const conversationHistory = [];
+  // Whether we're waiting for an AI response
+  let awaitingAI = false;
+  // Whether the profile is complete and we're waiting for confirmation
+  let profileComplete = false;
+  let pendingProfileSummary = null;
 
   // ================================================================
   // DOM Refs
@@ -47,7 +45,6 @@
   function showAppScreen(target) {
     const screens = [screenUpload, screenChat, screenDone];
     const current = screens.find(s => s.classList.contains('active'));
-
     if (current === target) return;
 
     if (current) {
@@ -67,46 +64,31 @@
     }
   }
 
-  // Handle all [data-nav] clicks
+  // Handle [data-nav] clicks
   document.addEventListener('click', (e) => {
     const trigger = e.target.closest('[data-nav]');
     if (!trigger) return;
     e.preventDefault();
-
     const action = trigger.getAttribute('data-nav');
-    // Close mobile menu
     navLinks.classList.remove('open');
     navToggle.classList.remove('open');
-
-    if (action === 'get-started') {
-      showPage(pageApp);
-    } else if (action === 'home') {
-      showPage(pageLanding);
-    }
+    if (action === 'get-started') showPage(pageApp);
+    else if (action === 'home') showPage(pageLanding);
   });
 
   // ================================================================
   // Navbar
   // ================================================================
-  // Scroll state
-  let lastScroll = 0;
   window.addEventListener('scroll', () => {
-    const scrollY = window.scrollY;
-    if (scrollY > 20) {
-      navbar.classList.add('scrolled');
-    } else {
-      navbar.classList.remove('scrolled');
-    }
-    lastScroll = scrollY;
+    if (window.scrollY > 20) navbar.classList.add('scrolled');
+    else navbar.classList.remove('scrolled');
   }, { passive: true });
 
-  // Mobile toggle
   navToggle.addEventListener('click', () => {
     navToggle.classList.toggle('open');
     navLinks.classList.toggle('open');
   });
 
-  // Close mobile menu on anchor link clicks
   navLinks.querySelectorAll('a[href^="#"]').forEach(link => {
     link.addEventListener('click', () => {
       navLinks.classList.remove('open');
@@ -132,7 +114,7 @@
   // Upload Handling
   // ================================================================
   uploadArea.addEventListener('click', (e) => {
-    if (e.target.closest('.btn')) return; // let label handle it
+    if (e.target.closest('.btn')) return;
     fileInput.click();
   });
 
@@ -163,7 +145,6 @@
       showError('Please upload a PDF or DOCX file.');
       return;
     }
-
     if (file.size > 10 * 1024 * 1024) {
       showError('File is too large. Maximum size is 10 MB.');
       return;
@@ -179,19 +160,16 @@
 
     try {
       const res = await fetch('/api/upload-resume', { method: 'POST', body: formData });
-
       let json;
       try {
         json = await res.json();
       } catch {
         throw new Error('Server returned an invalid response. Please try again.');
       }
-
-      if (!res.ok) {
-        throw new Error(json.error || 'Upload failed.');
-      }
+      if (!res.ok) throw new Error(json.error || 'Upload failed.');
 
       resumeData = json.data;
+      resumeText = json.resumeText || '';
       statusText.textContent = 'Resume parsed successfully!';
 
       setTimeout(() => {
@@ -211,85 +189,229 @@
   }
 
   // ================================================================
-  // Chat Intake
+  // Chat — UI Helpers
   // ================================================================
-  function addMessage(text, sender) {
-    return new Promise((resolve) => {
-      const bubble = document.createElement('div');
-      bubble.className = `chat-bubble ${sender}`;
-      bubble.textContent = text;
-      chatMessages.appendChild(bubble);
-      requestAnimationFrame(() => {
-        chatMessages.scrollTo({ top: chatMessages.scrollHeight, behavior: 'smooth' });
-      });
-      setTimeout(resolve, 350);
-    });
-  }
-
-  function showTyping() {
-    const indicator = document.createElement('div');
-    indicator.className = 'typing-indicator';
-    indicator.id = 'typing-indicator';
-    indicator.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
-    chatMessages.appendChild(indicator);
+  function scrollToBottom() {
     requestAnimationFrame(() => {
       chatMessages.scrollTo({ top: chatMessages.scrollHeight, behavior: 'smooth' });
     });
   }
 
-  function hideTyping() {
+  function addMessageBubble(text, sender) {
+    const bubble = document.createElement('div');
+    bubble.className = `chat-bubble ${sender}`;
+    // Support newlines in bot messages
+    if (sender === 'bot' && text.includes('\n')) {
+      bubble.innerHTML = escapeHtml(text).replace(/\n/g, '<br>');
+    } else {
+      bubble.textContent = text;
+    }
+    chatMessages.appendChild(bubble);
+    scrollToBottom();
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function showTypingIndicator() {
+    const existing = document.getElementById('typing-indicator');
+    if (existing) return;
+    const indicator = document.createElement('div');
+    indicator.className = 'typing-indicator';
+    indicator.id = 'typing-indicator';
+    indicator.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+    chatMessages.appendChild(indicator);
+    scrollToBottom();
+  }
+
+  function hideTypingIndicator() {
     const indicator = document.getElementById('typing-indicator');
     if (indicator) indicator.remove();
   }
 
-  async function addBotMessage(text) {
-    showTyping();
-    await new Promise(r => setTimeout(r, 500 + Math.random() * 400));
-    hideTyping();
-    await addMessage(text, 'bot');
+  function showQuickButtons(buttons) {
+    // Remove any existing button groups
+    removeQuickButtons();
+    const group = document.createElement('div');
+    group.className = 'chat-button-group';
+    group.id = 'chat-button-group';
+    buttons.forEach(label => {
+      const btn = document.createElement('button');
+      btn.className = 'chat-quick-btn';
+      btn.textContent = label;
+      btn.addEventListener('click', () => {
+        handleUserInput(label);
+      });
+      group.appendChild(btn);
+    });
+    chatMessages.appendChild(group);
+    scrollToBottom();
   }
 
+  function removeQuickButtons() {
+    const existing = document.getElementById('chat-button-group');
+    if (existing) existing.remove();
+  }
+
+  function showSaveButton() {
+    removeQuickButtons();
+    const group = document.createElement('div');
+    group.className = 'chat-button-group';
+    group.id = 'chat-button-group';
+    const btn = document.createElement('button');
+    btn.className = 'chat-quick-btn chat-quick-btn-primary';
+    btn.textContent = 'Looks good, save my profile';
+    btn.addEventListener('click', () => saveProfile());
+    group.appendChild(btn);
+
+    const editBtn = document.createElement('button');
+    editBtn.className = 'chat-quick-btn';
+    editBtn.textContent = 'I want to change something';
+    editBtn.addEventListener('click', () => {
+      handleUserInput('I want to change something');
+    });
+    group.appendChild(editBtn);
+
+    chatMessages.appendChild(group);
+    scrollToBottom();
+  }
+
+  function setInputEnabled(enabled) {
+    chatInput.disabled = !enabled;
+    chatSend.disabled = !enabled;
+    if (enabled) chatInput.focus();
+  }
+
+  // ================================================================
+  // Chat — AI Conversation
+  // ================================================================
   async function startIntake() {
-    const name = resumeData.name ? resumeData.name.split(' ')[0] : 'there';
-    await addBotMessage(`Hi ${name}! I\u2019ve parsed your resume successfully. Let me ask a few quick questions to set up your profile.`);
-    askQuestion();
-  }
+    // Send initial message to AI to get personalized greeting
+    setInputEnabled(false);
+    showTypingIndicator();
 
-  async function askQuestion() {
-    if (currentQuestion >= INTAKE_QUESTIONS.length) {
-      finishIntake();
-      return;
+    // The first message triggers the AI greeting
+    conversationHistory.push({
+      role: 'user',
+      content: 'Hi, I just uploaded my resume. Please start by reviewing it and introducing yourself.'
+    });
+
+    try {
+      const response = await callChatAPI();
+      hideTypingIndicator();
+
+      // Remove the synthetic first user message from visible chat
+      // (the user didn't actually type it)
+      addMessageBubble(response.message, 'bot');
+
+      if (response.buttons && response.buttons.length > 0) {
+        showQuickButtons(response.buttons);
+      }
+
+      setInputEnabled(true);
+    } catch (err) {
+      hideTypingIndicator();
+      addMessageBubble('Something went wrong starting the conversation. Please refresh and try again.', 'bot');
+      setInputEnabled(true);
     }
-    await addBotMessage(INTAKE_QUESTIONS[currentQuestion].text);
-    chatInput.focus();
   }
 
-  chatSend.addEventListener('click', submitAnswer);
-  chatInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) submitAnswer();
+  async function handleUserInput(text) {
+    if (awaitingAI || !text.trim()) return;
+
+    const userText = text.trim();
+    removeQuickButtons();
+    addMessageBubble(userText, 'user');
+
+    // Add to conversation history
+    conversationHistory.push({ role: 'user', content: userText });
+
+    awaitingAI = true;
+    setInputEnabled(false);
+    showTypingIndicator();
+
+    try {
+      const response = await callChatAPI();
+      hideTypingIndicator();
+      awaitingAI = false;
+
+      addMessageBubble(response.message, 'bot');
+
+      if (response.profileComplete && response.profileSummary) {
+        profileComplete = true;
+        pendingProfileSummary = response.profileSummary;
+        showSaveButton();
+      } else if (response.buttons && response.buttons.length > 0) {
+        showQuickButtons(response.buttons);
+      }
+
+      setInputEnabled(true);
+    } catch (err) {
+      hideTypingIndicator();
+      awaitingAI = false;
+      addMessageBubble('Sorry, something went wrong. Please try typing your answer again.', 'bot');
+      setInputEnabled(true);
+    }
+  }
+
+  async function callChatAPI() {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        resumeData,
+        resumeText,
+        messages: conversationHistory
+      })
+    });
+
+    let json;
+    try {
+      json = await res.json();
+    } catch {
+      throw new Error('Server returned an invalid response.');
+    }
+
+    if (!res.ok) throw new Error(json.error || 'Chat request failed.');
+
+    // Add assistant response to conversation history
+    conversationHistory.push({ role: 'assistant', content: json.message });
+
+    return json;
+  }
+
+  // ================================================================
+  // Chat — Input handlers
+  // ================================================================
+  chatSend.addEventListener('click', () => {
+    const value = chatInput.value.trim();
+    if (value) {
+      chatInput.value = '';
+      handleUserInput(value);
+    }
   });
 
-  function submitAnswer() {
-    const value = chatInput.value.trim();
-    if (!value) return;
-
-    addMessage(value, 'user');
-    chatInput.value = '';
-
-    const q = INTAKE_QUESTIONS[currentQuestion];
-
-    if (q.key === 'target_roles') {
-      intakeAnswers.target_roles = value.split(',').map(s => s.trim()).filter(Boolean);
-    } else {
-      intakeAnswers[q.key] = value;
+  chatInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      const value = chatInput.value.trim();
+      if (value) {
+        chatInput.value = '';
+        handleUserInput(value);
+      }
     }
+  });
 
-    currentQuestion++;
-    setTimeout(() => askQuestion(), 300);
-  }
-
-  async function finishIntake() {
-    await addBotMessage('Thanks! Saving your profile\u2026');
+  // ================================================================
+  // Save Profile
+  // ================================================================
+  async function saveProfile() {
+    removeQuickButtons();
+    addMessageBubble('Saving your profile\u2026', 'bot');
+    showTypingIndicator();
 
     const profile = {
       name: resumeData.name,
@@ -298,11 +420,11 @@
       skills: resumeData.skills || [],
       experience: resumeData.experience || [],
       education: resumeData.education || [],
-      target_roles: intakeAnswers.target_roles || [],
-      location: intakeAnswers.location || null,
-      salary_range: intakeAnswers.salary_range || null,
-      job_type: intakeAnswers.job_type || null,
-      avoid_list: intakeAnswers.avoid_list === 'none' ? null : (intakeAnswers.avoid_list || null)
+      target_roles: pendingProfileSummary.target_roles || [],
+      location: pendingProfileSummary.location || null,
+      salary_range: pendingProfileSummary.salary_range || null,
+      job_type: pendingProfileSummary.job_type || null,
+      avoid_list: pendingProfileSummary.avoid_list || null
     };
 
     try {
@@ -321,10 +443,12 @@
 
       if (!res.ok) throw new Error(json.error || 'Save failed.');
 
-      await addBotMessage('All done! Redirecting you now\u2026');
-      setTimeout(() => showAppScreen(screenDone), 800);
+      hideTypingIndicator();
+      addMessageBubble('Profile saved! Redirecting you now\u2026', 'bot');
+      setTimeout(() => showAppScreen(screenDone), 1000);
     } catch (err) {
-      await addBotMessage(`Something went wrong: ${err.message}. Please try again later.`);
+      hideTypingIndicator();
+      addMessageBubble(`Something went wrong: ${err.message}. Please try again later.`, 'bot');
     }
   }
 })();
