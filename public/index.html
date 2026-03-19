@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoApply</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <!-- Landing / Upload Screen -->
+  <div id="screen-upload" class="screen active">
+    <div class="container">
+      <h1>AutoApply</h1>
+      <p class="subtitle">Your AI-powered job application assistant</p>
+
+      <div id="upload-area" class="upload-area">
+        <div class="upload-icon">&#128196;</div>
+        <p>Drag & drop your resume here</p>
+        <p class="muted">or</p>
+        <label class="btn" for="file-input">Choose File</label>
+        <input type="file" id="file-input" accept=".pdf,.docx" hidden>
+        <p class="muted">PDF or DOCX, up to 10 MB</p>
+      </div>
+
+      <div id="upload-status" class="status hidden">
+        <div class="spinner"></div>
+        <p id="status-text">Parsing your resume...</p>
+      </div>
+
+      <div id="upload-error" class="error hidden"></div>
+    </div>
+  </div>
+
+  <!-- Chatbot Intake Screen -->
+  <div id="screen-chat" class="screen">
+    <div class="container chat-container">
+      <h2>AutoApply</h2>
+      <div id="chat-messages" class="chat-messages"></div>
+      <div id="chat-input-area" class="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Type your answer..." autocomplete="off">
+        <button id="chat-send" class="btn">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done Screen -->
+  <div id="screen-done" class="screen">
+    <div class="container">
+      <div class="done-icon">&#10003;</div>
+      <h2>You're all set!</h2>
+      <p>Your profile has been saved. We'll start finding matches for you.</p>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
